@@ -171,6 +171,7 @@ void drawLine_high(int x1, int y1, int x2, int y2, color3i color){
 		/*
 		Loop que itera Y à partir do vértice inicial até o vérice final
 		*/
+		if (DEBUG) printf("[INFO] CALLING glVertex2i(%d, %d).\n", x, y);
 		glVertex2i(x, y); // Pinta o pixel atual
 		if ((x > WINDOW_WIDTH || x < 0 || y > WINDOW_HEIGHT || y < 0) && DEBUG)
 			printf("[WARNING] Drawing pixel off window (%d, %d)\n", x, y);
