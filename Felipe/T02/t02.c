@@ -7,7 +7,7 @@
 #	Seção de inclusão e opções do OpenGL
 ################################################################################
 */
-#define GL_SILENCE_DEPRECATION
+
 #ifdef _WIN32
     #include "libs/glut.h"
     #include <windows.h>
@@ -25,6 +25,7 @@
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
+#define DEBUG 1
 
 /*
 ################################################################################
@@ -41,6 +42,14 @@ typedef struct color3i{
 	GLint green;
 	GLint blue;
 } color3i;
+
+void putPixel(int x, int y, color3i color){
+	glBegin(GL_POINTS);
+	glColor3ub(color.red, color.green, color.blue);
+	glVertex2i(x, y);
+	glEnd();
+	glFlush();
+}
 
 /*
 Função básica de desenho de retas. Só funciona pra ângulos menores que 45 graus
@@ -89,6 +98,9 @@ void drawLine_low(int x1, int y1, int x2, int y2, color3i color){
 	int dy = y2 - y1; // Calcula a distância no eixo Y
 	int incY = 1; // Incremento no eixo Y
 
+	if (DEBUG)
+		printf("[INFO] DRAWING LINE FROM (%d, %d) to (%d, %d) USING LOW.\n", x1, y1, x2, y2);
+
 	if(dy < 0){ // Caso a reta esteja indo para valores negativos de y...
 		incY = -1; // Inverte-se o valor do incremento de Y
 		dy = -(dy); // E inverte-se o valor do dy.
@@ -103,12 +115,15 @@ void drawLine_low(int x1, int y1, int x2, int y2, color3i color){
 	int twody = 2 * dy; // Variável para recáclulo do d
 	
 	glColor3ub(color.red, color.green, color.blue);
-	glBegin(GL_POINTS); // Inicia o modo de desenho com o OpenGL
-	for(x = x1; x < x2; x++){
+	glBegin(GL_LINES); // Inicia o modo de desenho com o OpenGL
+	for(x = x1; x <= x2; x++){
 	/*
 	Loop que itera X desde o vértice inicial até o final
 	*/ 
+		if (DEBUG) printf("[INFO] CALLING glVertex2i(%d, %d).\n", x, y);
 		glVertex2i(x, y); // Pinta o pixel atual
+		if ((x > WINDOW_WIDTH || x < 0 || y > WINDOW_HEIGHT || y < 0) && DEBUG)
+			printf("[WARNING] Drawing pixel off window (%d, %d)\n", x, y);
 		if(d > 0) { // Tomada de decisão
 			/* 
 			Seleciona NE ou SE, de acordo com a inclinação da reta, verificada 
@@ -134,6 +149,9 @@ void drawLine_high(int x1, int y1, int x2, int y2, color3i color){
 	int dy = y2 - y1; // Calcula a distância no eixo Y
 	int incX = 1; // Incremento no eixo X
 
+	if (DEBUG)
+		printf("[INFO] DRAWING LINE FROM (%d, %d) to (%d, %d) USING HIGH.\n", x1, y1, x2, y2);
+
 	if(dx < 0){ // Caso a reta esteja indo para valores negativos de x...
 		incX = -1; // Inverte-se o valor do incremento de X
 		dx = -(dx); // E inverte-se o valor do dx.
@@ -148,12 +166,14 @@ void drawLine_high(int x1, int y1, int x2, int y2, color3i color){
 	int twody = 2 * dy; // Variável para recáclulo do d
 
 	glColor3ub(color.red, color.green, color.blue);
-	glBegin(GL_POINTS); // Inicia o modo de desenho com o OpenGL
-	for(y = y1; y < y2; y++){
+	glBegin(GL_LINES); // Inicia o modo de desenho com o OpenGL
+	for(y = y1; y <= y2; y++){
 		/*
 		Loop que itera Y à partir do vértice inicial até o vérice final
 		*/
 		glVertex2i(x, y); // Pinta o pixel atual
+		if ((x > WINDOW_WIDTH || x < 0 || y > WINDOW_HEIGHT || y < 0) && DEBUG)
+			printf("[WARNING] Drawing pixel off window (%d, %d)\n", x, y);
 		if(d > 0) { // Tomada de decisão
 			/*
 			Seleciona NE ou NO, de acordo com a inclinação da reta, verificada 
@@ -178,6 +198,7 @@ void drawLine(vertex2D v1, vertex2D v2, color3i color){
 	*/
 	int dx = v2.x - v1.x;
 	int dy = v2.y - v1.y;
+	if (DEBUG) printf("[INFO] DX = %d; DY = %d.\n", dx, dy);
 
 	if(dx >= dy){ // Decide qual função usar baseado no ângulo da reta.
 		/*
@@ -196,6 +217,7 @@ void drawLine(vertex2D v1, vertex2D v2, color3i color){
 			que a função receba como entrada uma reta que vai de um menor valor
 			de X para um maior valor de X.
 			*/
+			if (DEBUG) printf("[INFO] DX < 0. DRAWING LINE WITH INVERTED VERTEXES.\n");
 			drawLine_low(v2.x, v2.y, v1.x, v1.y, color);
 		}
 	} else {
@@ -216,17 +238,10 @@ void drawLine(vertex2D v1, vertex2D v2, color3i color){
 			que a função receba como entrada uma reta que vai de um menor valor
 			de Y para um maior valor de Y.
 			*/
-			
+			if (DEBUG) printf("[INFO] DY < 0. DRAWING LINE WITH INVERTED VERTEXES.\n");
+			drawLine_high(v2.x, v2.y, v1.x, v1.y, color);
 		}
 	}
-}
-
-/*
-Função de inicialização.
-*/
-void init() {
-    glClearColor(0,0,0,0); // Define a cor de limpeza da tela.
-    gluOrtho2D(-WINDOW_WIDTH/2, WINDOW_WIDTH/2, -WINDOW_HEIGHT/2, WINDOW_HEIGHT/2); // Estabelece a área de visualização.
 }
 
 /*
@@ -238,27 +253,22 @@ void display(){
 	 // Limpa a janela de visualização com a cor de fundo especificada 
 	 glClear(GL_COLOR_BUFFER_BIT);
 	//Cria os componentes dos eixos.
-	vertex2D xAxisLeft = {-WINDOW_WIDTH/2, 0};
-	vertex2D xAxisRight = {WINDOW_WIDTH/2, 0};
-	vertex2D yAxisBottom = {0, WINDOW_WIDTH/2};
-	vertex2D yAxisTop = {0, -WINDOW_WIDTH/2};
+	vertex2D xAxisLeft = {0, WINDOW_HEIGHT/2};
+	vertex2D xAxisRight = {WINDOW_WIDTH, WINDOW_HEIGHT/2};
+	vertex2D yAxisTop = {WINDOW_WIDTH/2, 0};
+	vertex2D yAxisBottom = {WINDOW_WIDTH/2, WINDOW_HEIGHT};
 	color3i xAxisColor = {235, 0, 0};
 	color3i yAxisColor = {0, 235, 0};
 
-	
-	//Desenha os eixos.
-	drawLine(xAxisLeft, xAxisRight, xAxisColor);
-	drawLine(yAxisTop, yAxisBottom, yAxisColor);
-
-	vertex2D center = {0, 0}; // Vértice no centro do plano.
-	vertex2D o1 = {100, 10};
-	vertex2D o2 = {90, 100};
-	vertex2D o3 = {-10, 100};
-	vertex2D o4 = {-100, 90};
-	vertex2D o5 = {-100, -10};
-	vertex2D o6 = {-90, -100};
-	vertex2D o7 = {10, -100};
-	vertex2D o8 = {100, -90};
+	vertex2D center = {320, 240}; // Vértice no centro do plano.
+	vertex2D o1 = {420, 250};
+	vertex2D o2 = {410, 340};
+	vertex2D o3 = {310, 340};
+	vertex2D o4 = {220, 330};
+	vertex2D o5 = {220, 230};
+	vertex2D o6 = {230, 140};
+	vertex2D o7 = {330, 140};
+	vertex2D o8 = {420, 150};
 	color3i lineColor = {235, 235, 235};
 
 	// Traça retas à partir do centro até os vértices espalhados pelo plano
@@ -271,10 +281,15 @@ void display(){
 	drawLine(center, o7, lineColor);
 	drawLine(center, o8, lineColor);
 
+	//Desenha os eixos.
+	drawLine(xAxisLeft, xAxisRight, xAxisColor);
+	drawLine(yAxisTop, yAxisBottom, yAxisColor);
 }
 
-int main(int argc, char** argv){
-	glutInit(&argc, argv);
+/*
+Função de inicialização.
+*/
+void init() {
 	int width = glutGet(GLUT_SCREEN_WIDTH); // Pega a largura da tela
 	int height = glutGet(GLUT_SCREEN_HEIGHT); // Pega a altura da tela
 	int xpos = 100; // Posição inicial x da janela.
@@ -289,6 +304,14 @@ int main(int argc, char** argv){
     glutInitWindowPosition (xpos, ypos);
     glutCreateWindow("Teste de Traçado de Retas");
     glutDisplayFunc(display);
+    glClearColor(0,0,0,0); // Define a cor de limpeza da tela.
+    gluOrtho2D(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0); // Estabelece a área de visualização.
+    printf("Projection Bounds: (%d, %d, %d, %d).\n", 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
+    glPointSize(1.0f);
+}
+
+int main(int argc, char** argv){
+	glutInit(&argc, argv);
     init();
     glutMainLoop();
 }
