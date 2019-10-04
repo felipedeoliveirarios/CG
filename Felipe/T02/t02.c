@@ -115,7 +115,7 @@ void drawLine_low(int x1, int y1, int x2, int y2, color3i color){
 	int twody = 2 * dy; // Variável para recáclulo do d
 	
 	glColor3ub(color.red, color.green, color.blue);
-	glBegin(GL_LINES); // Inicia o modo de desenho com o OpenGL
+	glBegin(GL_POINTS); // Inicia o modo de desenho com o OpenGL
 	for(x = x1; x <= x2; x++){
 	/*
 	Loop que itera X desde o vértice inicial até o final
@@ -166,7 +166,7 @@ void drawLine_high(int x1, int y1, int x2, int y2, color3i color){
 	int twody = 2 * dy; // Variável para recáclulo do d
 
 	glColor3ub(color.red, color.green, color.blue);
-	glBegin(GL_LINES); // Inicia o modo de desenho com o OpenGL
+	glBegin(GL_POINTS); // Inicia o modo de desenho com o OpenGL
 	for(y = y1; y <= y2; y++){
 		/*
 		Loop que itera Y à partir do vértice inicial até o vérice final
@@ -201,7 +201,7 @@ void drawLine(vertex2D v1, vertex2D v2, color3i color){
 	int dy = v2.y - v1.y;
 	if (DEBUG) printf("[INFO] DX = %d; DY = %d.\n", dx, dy);
 
-	if(dx >= dy){ // Decide qual função usar baseado no ângulo da reta.
+	if(abs(dx) >= abs(dy)){ // Decide qual função usar baseado no ângulo da reta.
 		/*
 		A reta faz ângulo menor ou igual a 45 graus com o eixo X; portanto, a 
 		função que itera sobre X pode ser usada sem complicações.
@@ -250,9 +250,9 @@ Função de exibição.
 */
 void display(){
 	glMatrixMode(GL_MODELVIEW); 
-	 glLoadIdentity(); 
-	 // Limpa a janela de visualização com a cor de fundo especificada 
-	 glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity(); 
+	// Limpa a janela de visualização com a cor de fundo especificada 
+	glClear(GL_COLOR_BUFFER_BIT);
 	//Cria os componentes dos eixos.
 	vertex2D xAxisLeft = {0, WINDOW_HEIGHT/2};
 	vertex2D xAxisRight = {WINDOW_WIDTH, WINDOW_HEIGHT/2};
@@ -273,17 +273,27 @@ void display(){
 	color3i lineColor = {235, 235, 235};
 
 	// Traça retas à partir do centro até os vértices espalhados pelo plano
+	if (DEBUG) printf("\n[INFO] DRAWING FROM CENTER TO O1.\n");
 	drawLine(center, o1, lineColor);
+	if (DEBUG) printf("\n[INFO] DRAWING FROM CENTER TO O2.\n");
 	drawLine(center, o2, lineColor);
+	if (DEBUG) printf("\n[INFO] DRAWING FROM CENTER TO O3.\n");
 	drawLine(center, o3, lineColor);
+	if (DEBUG) printf("\n[INFO] DRAWING FROM CENTER TO O4.\n");
 	drawLine(center, o4, lineColor);
+	if (DEBUG) printf("\n[INFO] DRAWING FROM CENTER TO O5.\n");
 	drawLine(center, o5, lineColor);
+	if (DEBUG) printf("\n[INFO] DRAWING FROM CENTER TO O6.\n");
 	drawLine(center, o6, lineColor);
+	if (DEBUG) printf("\n[INFO] DRAWING FROM CENTER TO O7.\n");
 	drawLine(center, o7, lineColor);
+	if (DEBUG) printf("\n[INFO] DRAWING FROM CENTER TO O8.\n");
 	drawLine(center, o8, lineColor);
 
 	//Desenha os eixos.
+	if (DEBUG) printf("\n[INFO] DRAWING X AXIS.\n");
 	drawLine(xAxisLeft, xAxisRight, xAxisColor);
+	if (DEBUG) printf("\n[INFO] DRAWING Y AXIS.\n");
 	drawLine(yAxisTop, yAxisBottom, yAxisColor);
 }
 
@@ -306,9 +316,10 @@ void init() {
     glutCreateWindow("Teste de Traçado de Retas");
     glutDisplayFunc(display);
     glClearColor(0,0,0,0); // Define a cor de limpeza da tela.
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
     gluOrtho2D(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0); // Estabelece a área de visualização.
-    printf("Projection Bounds: (%d, %d, %d, %d).\n", 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
-    glPointSize(1.0f);
+    printf("Projection Bounds:  gluOrtho2D(%d, %d, %d, %d).\n", 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 }
 
 int main(int argc, char** argv){
