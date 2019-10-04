@@ -23,9 +23,9 @@
 ################################################################################
 */
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
-#define DEBUG 1
+#define WINDOW_WIDTH 640 // Largura da janela
+#define WINDOW_HEIGHT 480 // Altura da janela
+#define DEBUG 1 // Ativa/Desativa os prints de debug
 
 /*
 ################################################################################
@@ -60,7 +60,7 @@ void drawLine_basic(vertex2D v1, vertex2D v2, color3i color){
 	int dy = v2.y - v1.y; // Calcula a distância no eixo Y
 	int d = 2 * dy - dx; // Calcula o valor inicial da variável de decisão
 	int incE = 2 * dy; // Calcula o incremento para a direção E
-	int incNE = 2 * (dx - dy); // Calcula o incremento para a direção NE
+	int incNE = 2 * (dy - dx); // Calcula o incremento para a direção NE
 
 	int x = v1.x; // Posição inicial x da linha
 	int y = v1.y; // Posição inicial y da linha
@@ -254,22 +254,22 @@ void display(){
 	// Limpa a janela de visualização com a cor de fundo especificada 
 	glClear(GL_COLOR_BUFFER_BIT);
 	//Cria os componentes dos eixos.
-	vertex2D xAxisLeft = {0, WINDOW_HEIGHT/2};
-	vertex2D xAxisRight = {WINDOW_WIDTH, WINDOW_HEIGHT/2};
-	vertex2D yAxisTop = {WINDOW_WIDTH/2, 0};
-	vertex2D yAxisBottom = {WINDOW_WIDTH/2, WINDOW_HEIGHT};
+	vertex2D xAxisLeft = {-WINDOW_WIDTH/2, 0};
+	vertex2D xAxisRight = {WINDOW_WIDTH/2, 0};
+	vertex2D yAxisTop = {0, WINDOW_HEIGHT/2};
+	vertex2D yAxisBottom = {0, -WINDOW_HEIGHT/2};
 	color3i xAxisColor = {235, 0, 0};
 	color3i yAxisColor = {0, 235, 0};
 
-	vertex2D center = {320, 240}; // Vértice no centro do plano.
-	vertex2D o1 = {420, 250};
-	vertex2D o2 = {410, 340};
-	vertex2D o3 = {310, 340};
-	vertex2D o4 = {220, 330};
-	vertex2D o5 = {220, 230};
-	vertex2D o6 = {230, 140};
-	vertex2D o7 = {330, 140};
-	vertex2D o8 = {420, 150};
+	vertex2D center = {0, 0}; // Vértice no centro do plano.
+	vertex2D o1 = {100, 10};
+	vertex2D o2 = {90, 100};
+	vertex2D o3 = {-10, 100};
+	vertex2D o4 = {-100, 90};
+	vertex2D o5 = {-100, -10};
+	vertex2D o6 = {-90, -100};
+	vertex2D o7 = {10, -100};
+	vertex2D o8 = {100, -90};
 	color3i lineColor = {235, 235, 235};
 
 	// Traça retas à partir do centro até os vértices espalhados pelo plano
@@ -318,8 +318,8 @@ void init() {
     glClearColor(0,0,0,0); // Define a cor de limpeza da tela.
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT); // Estabelece a área de visualização.
-    printf("Projection Bounds:  gluOrtho2D(%d, %d, %d, %d).\n", 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    gluOrtho2D(-WINDOW_WIDTH/2, WINDOW_WIDTH/2, -WINDOW_HEIGHT/2, WINDOW_HEIGHT/2); // Estabelece a área de visualização.
+    printf("Projection Bounds:  (%d, %d, %d, %d).\n", -WINDOW_WIDTH/2, WINDOW_WIDTH/2, -WINDOW_HEIGHT/2, WINDOW_HEIGHT/2);
 }
 
 int main(int argc, char** argv){
