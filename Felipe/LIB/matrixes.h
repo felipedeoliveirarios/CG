@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 typedef struct matrix{ 	// Estrutura de dados para armazenar uma matriz.
-	int rows; 		// Número de linhas da Matriz.
+	float data[][];	// Array de dados da matriz.
+	int rows; 	// Número de linhas da Matriz.
 	int columns;	// Número de colunas da Matriz.
-	float* data;	// Array de dados da matriz.
 } matrix;
 
 matrix* create(matrix m);
