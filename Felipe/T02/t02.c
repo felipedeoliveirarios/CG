@@ -318,7 +318,7 @@ void init() {
     glClearColor(0,0,0,0); // Define a cor de limpeza da tela.
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0); // Estabelece a área de visualização.
+    gluOrtho2D(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT); // Estabelece a área de visualização.
     printf("Projection Bounds:  gluOrtho2D(%d, %d, %d, %d).\n", 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 }
 
