@@ -223,6 +223,9 @@ void drawLine(vertex2D v1, vertex2D v2, color3i color){
 }
 
 void display(void) {
+    glMatrixMode(GL_MODELVIEW); 
+    glLoadIdentity();
+    // limpa a janela
     glClear(GL_COLOR_BUFFER_BIT);
 
     //Cria os componentes dos eixos.
@@ -232,7 +235,7 @@ void display(void) {
     vertex2D yAxisBottom = {0, -WINDOW_HEIGHT/2};
     color3i xAxisColor = {235, 0, 0};
     color3i yAxisColor = {0, 235, 0};
-    
+
     //Desenha os eixos.
     if (DEBUG) printf("\n[INFO] DRAWING X AXIS.\n");
     drawLine(xAxisLeft, xAxisRight, xAxisColor);
@@ -243,8 +246,8 @@ void display(void) {
     color3i red = {255,0,0};
 
     // inicializa os vértices do poliedro. Um cubo, no caso.
-    vertex3i vertexes[] = {{1, 1, 1}, {-1, 1, 1}, {1, -1, 1}, {-1, -1, 1},
-    {1, 1, -1}, {-1, 1, -1}, {1, -1, -1}, {-1, -1, -1}};
+    vertex3i vertexes[] = {{50, 50, 50}, {-50, 50, 50}, {-50, -50, 50}, {50, -50, 50},
+    {50, 50, -50}, {-50, 50, -50}, {-50, -50, -50}, {50, -50, -50}};
 
     //vetor de arestas. Contém pares de índices cujos vértices formam uma aresta.
     int edges[][] = {{0, 1}, {1, 2}, {2, 3}, {3, 0}, // quadrado da face superior
