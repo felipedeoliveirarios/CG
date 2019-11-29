@@ -58,7 +58,7 @@ typedef struct matrix{
     int cols;
 }
 
-matrix ortho = 
+matrix ortho = {[]}
 
 void drawCircle(int xc, int yc, int r, Color3i color){
 	int x = 0;

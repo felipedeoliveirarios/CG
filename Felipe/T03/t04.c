@@ -58,7 +58,20 @@ typedef struct matrix{
     int cols;
 }
 
-matrix ortho = 
+matrix ortho = {.data={ 1.0, 0.0, 0.0, 
+                        0.0, 1.0, 0.0, 
+                        0.0, 0.0, 0.0},
+                .rows=3, .cols=3}
+
+matrix ortho = {.data={ 0.707,  0.376,   0,
+                        0,      0.845,   0,
+                        0.707,  -0.376,  0},
+                .rows=3, .cols=3}
+
+matrix pers = {.data={  1, 0, 0,
+                        0, 1, 0, 
+                        0, 0, -1/20.0},
+                .rows=3, .cols=3}
 
 void drawCircle(int xc, int yc, int r, Color3i color){
 	int x = 0;
